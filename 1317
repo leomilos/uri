@@ -1,0 +1,117 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include <cstdlib>
+
+using namespace std;
+
+vector< vector<int> > g; // Lista de Adjacência
+
+// Algoritmo calcula a menor distancia para alcançar todos os vertices do grafo partindo de um vertice inicial.
+vector<bool> bfs(int inicio){
+    //para os 3 vetores a seguir, cada posição do vetor representa um vertice do grafo.
+    vector<int> d(g.size(), -1); // Vetor de distância minima para alcançar o vertice.
+    vector<int> p(g.size(), -1); // Vetor que armazena o pai de cada vertice.
+    vector<bool> cor(g.size(), false); // Define se cada vertice ja foi encontrado ou não.
+
+    queue<int> Q; // Fila que define a ordem de acesso aos vertices.
+
+    // Inicialização
+    cor[inicio] = true; // Define a cor do vértice raiz como acessado.
+    d[inicio] = 0; // Define a distância da raiz para ela mesma como 0.
+
+    Q.push(inicio); // Enfileira a raiz.
+
+    // Enquanto a fila não estiver vazia.
+    while(!Q.empty()){
+        int u = Q.front(); // Define u como sendo o vértice na frente na fila.
+        Q.pop(); // Desenfileira.
+        //cout<<"vertice atual: "<<u<<endl;
+        // Para todo vertice adjacente à "u".
+        for(int i = 0; i < g[u].size(); i++){
+            // Se o vertice adjacente à "u" não tiver sido encontrado.
+            if(cor[g[u][i]] == false){
+                //cout<<g[u][i]<<endl;
+                Q.push(g[u][i]); // Enfileira o vertice adjacente.
+                cor[g[u][i]] = true; // Define o vertice adjacente como encontrado.
+                d[g[u][i]] = d[u]+1; // Define a distancia minima para alcançar o vertice.
+                p[g[u][i]] = u; // Define o pai do vertice adjacente como "u".
+            }
+        }
+        //cout<<endl;
+    }
+
+    // *** OBS: O RETORNO DA FUNÇÃO PODE SER ALTERADO CONFORME A NECESSIDADE DO PROBLEMA. ***
+    return cor; // Retorna o vetor peso.
+}
+
+int main(){
+    int N,m=1;
+
+    cin>>N;
+    while(N!=0){
+        vector<string> a,b,c;
+        vector<int> A1,A2;
+        g.resize(N+2);
+
+        for(int i=1;i<=N;i++){
+            cin>>m;
+            while (m != 0) {
+                g[i].push_back(m);
+                cin >> m;
+            }
+        }
+        int comeco;
+        cin>>comeco;
+        vector<vector<bool>> cor;
+
+        while(comeco!=0) {
+            vector<bool> cor1 = bfs(comeco);
+            cor.push_back(cor1);
+            int B1, B2;
+            cin >> B1 >> B2;
+            A1.push_back(B1);
+            A2.push_back(B2);
+            string a1, b1, c1;
+            cin >> a1 >> b1 >> c1;
+            a.push_back(a1);
+            b.push_back(b1);
+            c.push_back(c1);
+            cin >> comeco;
+        }
+        for(int i=1;i<=N;i++){
+            string temp;
+            cin>>temp;
+            //nome.push_back(temp);
+
+            cout<<temp<<": ";
+            //cout<<endl<<"pessoa:"<<i<<" cor:"<<cor[0][i]<<" contatos:"<<g[i].size()<<endl<<"condicao A1:"<<A1[0]<<" A2:"<<A2[0]<<endl;
+            for(int j=0;j<cor.size();j++){
+                //for(int k=0;k<3;k++) {
+                    if (cor[j][i] == false||g[i].size()<A1[j]) {
+                        cout << a[j];
+                        //continue
+                    } else {
+                        if(g[i].size()>=A1[j]&&g[i].size()<A2[j]){
+                            cout<<b[j];
+                         //   continue;
+                        } else{
+                            cout<<c[j];
+                            //continue;
+                        }
+                    }
+                        cout<<" ";
+
+                //}
+            }
+            cout<<endl;
+        }
+
+        cin>>N;
+        g.clear();
+    }
+
+    system("pause");
+
+    return 0;
+}
