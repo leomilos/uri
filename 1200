@@ -1,0 +1,208 @@
+#include <iostream>
+
+#ifndef No_HPP
+#define No_HPP
+
+#include <iostream>
+using namespace std;
+template <typename T>
+class Arvore;
+
+template <typename T>
+class No{
+public:
+    T valor;
+    int peso;
+    No<T>* pai;
+    No<T>* esq;
+    No<T>* dir;
+
+public:
+    No(T valor): valor(valor),pai(nullptr),esq(nullptr),dir(nullptr){
+
+    }
+    T getValor(){
+        return valor;
+    };
+
+    friend class Arvore<T>;
+};
+#endif
+
+#ifndef Arvore_HPP
+#define Arvore_HPP
+#include <iostream>
+#include <queue>
+using namespace std;
+template <typename T>
+class Arvore{
+private:
+    No<T>* raiz;
+    int cont=0;
+    int n;
+    void imprime2(No<T>* i){
+        if(i){
+            imprime2(i->esq);
+            if(cont!=0){
+                cout<<" ";
+            }
+            cont++;
+            cout<<i->valor;
+            imprime2(i->dir);
+        }
+
+    }
+    void destroi(No<T>* i){
+        No<T>* atual=raiz;
+        queue<No<T>* > fila;
+        fila.push(atual);
+        while(!fila.empty()){
+            atual=fila.front();
+            fila.pop();
+            if(atual->dir!= nullptr)
+                fila.push(atual->dir);
+            if(atual->esq!= nullptr)
+                fila.push(atual->esq);
+            delete atual;
+            raiz=nullptr;
+            n--;
+        }
+    }
+    int ContaFilho(No<T>* temp){
+        return (temp->dir!= nullptr)+(temp->esq!= nullptr);
+    }
+    No<T>* FilhoEsquerdo(No<T>* atual){
+        if(atual->esq!= nullptr){
+            FilhoEsquerdo(atual->esq);
+        }else {
+            return atual;
+        }
+    }
+
+public:
+    Arvore(): raiz(nullptr),n(0){
+
+    };
+    void imprime(){
+        cont=0;
+        imprime2(raiz);
+    }
+    bool insere(T valor){
+        No<T>* novo = new No<T>(valor);
+        if(!novo){
+            return false;
+        }
+        No<T>* atual=raiz;
+        No<T>* anterior= nullptr;
+        while (atual){
+            anterior=atual;
+            if(valor<=atual->valor){
+                atual=atual->esq;
+            } else{
+                atual=atual->dir;
+            }
+        }
+        novo->pai=anterior;
+        if(anterior) {
+            if (valor <= anterior->valor) {
+                anterior->esq=novo;
+            } else{
+                anterior->dir=novo;
+            }
+        } else{
+            raiz=novo;
+        }
+        n++;
+        return true;
+    }
+
+    bool procura(T temp){
+        No<T>* atual=raiz;
+        while(atual!= nullptr){
+            if(atual->valor==temp){
+                return true;
+            }
+            if(temp<atual->valor){
+                atual=atual->esq;
+            }else{
+                atual=atual->dir;
+            }
+
+        }
+        return false;
+
+    }
+    void prefixa2(No<T>* atual){
+        if(cont!=0){
+            cout<<" ";
+        }
+        cont++;
+        cout<<atual->valor;
+        if(atual->esq!= nullptr) prefixa2(atual->esq);
+        if(atual->dir!= nullptr) prefixa2(atual->dir);
+
+    }
+    void prefixa(){
+        cont=0;
+        prefixa2(raiz);
+    }
+    void posfixa(){
+        cont=0;
+        posfixa2(raiz);
+    }
+    void posfixa2(No<T>* atual){
+        if(atual->esq!= nullptr) posfixa2(atual->esq);
+        if(atual->dir!= nullptr) posfixa2(atual->dir);
+        if(cont!=0){
+            cout<<" ";
+        }
+        cont++;
+        cout<<atual->valor;
+
+    }
+
+    void destruidor(){
+        destroi(raiz);
+    }
+
+};
+
+#endif
+
+
+using namespace std;
+int main() {
+    Arvore<char> a;
+    string b;
+    while(cin>>b){
+        char temp;
+        if(b=="I"){
+            cin>>temp;
+            a.insere(temp);
+        }
+        if(b=="INFIXA"){
+            a.imprime();
+            cout<<endl;
+        }
+        if(b=="PREFIXA"){
+            a.prefixa();
+            cout<<endl;
+        }
+        if(b=="POSFIXA"){
+            a.posfixa();
+            cout<<endl;
+        }
+        if(b=="P"&&b!="POSFIXA"){
+            cin>>temp;
+            if(a.procura(temp)== true){
+                cout<<temp<<" existe"<<endl;
+            } else{
+                cout<<temp<<" nao existe"<<endl;
+            }
+
+        }
+
+    }
+
+    return 0;
+}
