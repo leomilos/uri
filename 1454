@@ -1,0 +1,251 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <list>
+#include <algorithm> // sort
+#include <string.h> // memset
+using namespace std;
+int maior =-1000000;
+int origem,destino;
+int b[101][101];
+
+class Aresta
+{
+    int vertice1, vertice2, peso;
+
+public:
+
+    Aresta(int v1, int v2, int peso)
+    {
+        vertice1 = v1;
+        vertice2 = v2;
+        this->peso = peso;
+    }
+
+    int obterVertice1()
+    {
+        return vertice1;
+    }
+
+    int obterVertice2()
+    {
+        return vertice2;
+    }
+
+    int obterPeso()
+    {
+        return peso;
+    }
+
+    // sobrescrita do operador "<"
+    bool operator < (const Aresta& aresta2) const
+    {
+        return (peso < aresta2.peso);
+    }
+};
+vector<Aresta> arvore2;
+
+class Grafo
+{
+    int V; // número de vértices
+    vector<Aresta> arestas; // vetor de arestas
+
+public:
+
+    Grafo(int V)
+    {
+        this->V = V;
+    }
+
+    // função que adiciona uma aresta
+    void adicionarAresta(int v1, int v2, int peso)
+    {
+        Aresta aresta(v1, v2, peso);
+        arestas.push_back(aresta);
+    }
+
+    // função que busca o subconjunto de um elemento "i"
+    int buscar(int subset[], int i)
+    {
+        if(subset[i] == -1)
+            return i;
+        return buscar(subset, subset[i]);
+    }
+
+    // função para unir dois subconjuntos em um único subconjunto
+    void unir(int subset[], int v1, int v2)
+    {
+        int v1_set = buscar(subset, v1);
+        int v2_set = buscar(subset, v2);
+        subset[v1_set] = v2_set;
+    }
+
+    /// função que roda o algoritmo de Kruskal
+    vector<Aresta> kruskal()
+    {
+        vector<Aresta> arvore;
+        int size_arestas = arestas.size();
+
+        // ordena as arestas pelo menor peso
+        sort(arestas.begin(), arestas.end());
+
+        // aloca memória para criar "V" subconjuntos
+        int * subset = new int[V];
+
+        // inicializa todos os subconjuntos como conjuntos de um único elemento
+        memset(subset, -1, sizeof(int) * V);
+
+        for(int i = 0; i < size_arestas; i++)
+        {
+            int v1 = buscar(subset, arestas[i].obterVertice1());
+            int v2 = buscar(subset, arestas[i].obterVertice2());
+
+            if(v1 != v2)
+            {
+                // se forem diferentes é porque NÃO forma ciclo, insere no vetor
+                arvore.push_back(arestas[i]);
+                unir(subset, v1, v2); // faz a união
+            }
+        }
+
+        int size_arvore = arvore.size();
+
+        // mostra as arestas selecionadas com seus respectivos pesos
+        /*for(int i = 0; i < size_arvore; i++)
+        {
+            int v1 = arvore[i].obterVertice1();
+            int v2 = arvore[i].obterVertice2();
+            //g[v1][v2]=arvore[i].obterPeso();
+            //g[v2][v1]=arvore[i].obterPeso();
+            cout << "(" << v1 << ", " << v2 << ") = " << arvore[i].obterPeso() << endl;
+        }*/
+        return arvore;
+    }
+};
+
+int atual=0;
+
+vector< vector<int> > g; // Lista de Adjacência
+
+// Algoritmo calcula a menor distancia para alcançar todos os vertices do grafo partindo de um vertice inicial.
+vector<int> bfs(int inicio){
+    //para os 3 vetores a seguir, cada posição do vetor representa um vertice do grafo.
+    vector<int> d(g.size(), -1); // Vetor de distância minima para alcançar o vertice.
+    vector<int> p(g.size(), -1); // Vetor que armazena o pai de cada vertice.
+    vector<bool> cor(g.size(), false); // Define se cada vertice ja foi encontrado ou não.
+
+    queue<int> Q; // Fila que define a ordem de acesso aos vertices.
+
+    // Inicialização
+    cor[inicio] = true; // Define a cor do vértice raiz como acessado.
+    d[inicio] = 0; // Define a distância da raiz para ela mesma como 0.
+
+    Q.push(inicio); // Enfileira a raiz.
+
+    // Enquanto a fila não estiver vazia.
+    while(!Q.empty()){
+        int u = Q.front(); // Define u como sendo o vértice na frente na fila.
+        Q.pop(); // Desenfileira.
+        //cout<<"vertice atual: "<<u<<endl;
+        // Para todo vertice adjacente à "u".
+        for(int i = 0; i < g[u].size(); i++){
+            // Se o vertice adjacente à "u" não tiver sido encontrado.
+            if(cor[g[u][i]] == false){
+                //cout<<g[u][i]<<endl;
+                Q.push(g[u][i]); // Enfileira o vertice adjacente.
+                cor[g[u][i]] = true; // Define o vertice adjacente como encontrado.
+                d[g[u][i]] = d[u]+1; // Define a distancia minima para alcançar o vertice.
+                p[g[u][i]] = u; // Define o pai do vertice adjacente como "u".
+                if(g[u][i]==destino){
+                    return  p;
+                }
+            }
+        }
+        //cout<<endl;
+    }
+
+    // *** OBS: O RETORNO DA FUNÇÃO PODE SER ALTERADO CONFORME A NECESSIDADE DO PROBLEMA. ***
+    return d; // Retorna o vetor peso.
+}
+
+
+int main(int argc, char *argv[]) {
+    int M=1,N=1,X,Y,cont=0;
+    double Z;
+    cin>>M>>N;
+    while(M!=0&&N!=0){
+        M++;
+        g.resize(M);
+        Grafo G(M);
+            cont++;
+            for(int i=0;i<N;i++){
+                cin>>X>>Y>>Z;
+                G.adicionarAresta(X,Y,Z);
+                G.adicionarAresta(Y,X,Z);
+                //b[X][Y]=Z;
+
+                //b[Y][X]=Z;
+            }
+            arvore2=G.kruskal();
+
+            for(int i = 0; i < arvore2.size(); i++)
+            {
+                int v1 = arvore2[i].obterVertice1();
+                int v2 = arvore2[i].obterVertice2();
+                g[v1].push_back(v2);
+                g[v2].push_back(v1);
+                b[v1][v2]=arvore2[i].obterPeso();
+                b[v2][v1]=arvore2[i].obterPeso();
+                //cout << "(" << v1 << ", " << v2 << ") = " << arvore2[i].obterPeso() << endl;
+
+            }
+            int outro;
+            cin>>outro;
+            cout<<"Instancia "<<cont<<endl;
+            for(int i=0;i<outro;i++) {
+                cin >> origem >> destino;
+                vector <int> p=bfs(origem);
+                if (destino == origem) {
+                    maior = 0;
+                    cout<<maior<<endl;
+                    maior = -1000000;
+                    continue;
+                }
+                int temp=destino;
+                //cout<<"o/d"<<origem<<destino<<endl;
+                /*if(maior=-2000000){
+                    maior=b[destino][p[destino]];
+                    atual=b[destino][p[destino]];
+                    //cout<<"entrou"<<b[destino][p[destino]]<<endl<<destino<<p[destino]<<endl<<atual<<endl;
+                }*/
+                for(int j=0;j<p.size();j++){
+
+                    //cout<<temp<<p[temp]<<endl<<b[temp][p[temp]]<<endl;
+                    if(b[temp][p[temp]]>maior){
+                        maior=b[temp][p[temp]];
+                    }
+                    if(p[temp]==origem){
+                        break;
+                    }
+                    atual=b[temp][p[temp]];
+                    temp=p[temp];
+                }
+                cout << maior << endl;
+
+                maior = -1000000;
+
+
+            }
+            maior = -1000000;
+            cout<<endl;
+            g.clear();
+            //delete(&G);
+            //cout<<"saiu"<<endl;
+
+
+        cin>>M>>N;
+        //b[101][101];
+    }
+    //cout<<"saiu"<<endl;
+    return 0;
+}
