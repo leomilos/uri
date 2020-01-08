@@ -1,0 +1,22 @@
+#include
+#include
+#include <stdio.h>
+
+using namespace std;
+
+int main(int argc, char *argv[])
+{
+  int n;
+  cin>>n;
+  int cont=0;
+  for(int i=0;i<n;i++){
+  int x;
+  cin>>x;
+  if(x!=1){
+    cont++;
+  }
+}
+  cout<<cont<<endl;
+  system("pause");
+  return 0;
+}
