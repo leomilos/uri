@@ -1,0 +1,68 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include <cstdlib>
+
+using namespace std;
+
+int cont=-1;
+
+vector< vector<int> > g; // Lista de Adjacência
+
+
+vector<int> bfs(int inicio){
+    vector<int> d(g.size(), -1);
+    vector<int> p(g.size(), -1); 
+    vector<bool> cor(g.size(), false); 
+    
+	queue<int> Q; 
+	
+
+    cor[inicio] = true; 
+    d[inicio] = 0;
+    
+    Q.push(inicio); 
+
+    while(!Q.empty()){
+      cont++;
+        int u = Q.front();
+        Q.pop();
+        for(int i = 0; i < g[u].size(); i++){
+			if(cor[g[u][i]] == false){
+                Q.push(g[u][i]); 
+                cor[g[u][i]] = true;
+                d[g[u][i]] = d[u]+1; 
+                p[g[u][i]] = u; 
+            }
+        }
+    }
+    return d;
+}
+
+int main(){
+	int N,M;
+	int x,y,vertice,n;
+	cin>>n;
+	for(int j=0;j<n;j++){
+  	cin>>vertice;
+  	cin>>N>>M;
+  	
+  	
+  	g.resize(N+1);
+  	
+  	for(int i=0;i<M;i++)
+  	{
+  		cin>>x>>y;
+  		g[x].push_back(y);
+  		g[y].push_back(x);
+  	}
+  	vector<int> dist = bfs(vertice);
+  	cout<<cont*2<<endl;
+  	cont=-1;
+  	g.clear();
+	}
+	
+	system("pause");
+	
+    return 0;
+}
