@@ -1,0 +1,94 @@
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <queue>
+#include <vector>
+
+using namespace std;
+int N;
+
+vector<bool> bfs(int inicio, vector<vector<int>> g, vector<vector<int>> chaves) {
+    vector<bool> cor(g.size(), false); // Define se cada vertice ja foi encontrado ou não.
+    vector<bool> tentou(g.size(), false);
+    vector<bool> key(N+1, false);
+
+    queue<int> Q; // Fila que define a ordem de acesso aos vertices.
+    cor[inicio] = true;
+    key[inicio]=true;
+    Q.push(inicio); // Enfileira a raiz.
+
+    while (!Q.empty()) {
+        int u = Q.front(); // Define u como sendo o vértice na frente na fila.
+        Q.pop();		   // Desenfileira.
+
+        for (int j = 0; j < chaves[u].size(); j++) {
+            key[chaves[u][j]] = true;
+            if(tentou[chaves[u][j]]==true){
+                Q.push(chaves[u][j]);
+                cor[chaves[u][j]] = true;
+            }
+        }
+        for (int i = 0; i < g[u].size(); i++) {
+            // cout <<" U = " << u << " Key["<<g[u][i] << "] = " << key[g[u][i]]
+            // <<" Tamanho g["<<u<<"] = " <<g[u].size() << endl;
+            if (key[g[u][i]] == true && cor[g[u][i]] == false) {
+                Q.push(g[u][i]);
+                // cout<<"entrou na fila:"<<g[u][i]<<endl;
+                cor[g[u][i]] = true;
+            } else {
+                if (cor[g[u][i]] == false) {
+                    tentou[g[u][i]]=true;
+                }
+            }
+        }
+
+    }
+
+    // cout << " TAMANHO Q " << Q.size() << endl;
+    return cor;
+}
+
+int main() {
+    int M;
+
+    while (cin >> N >> M) {
+        vector<vector<int>> g;
+        vector<vector<int>> chaves;
+
+        int x, y, vertice;
+        chaves.resize(N + 1);
+        g.resize(N + 1);
+        int cont = 0;
+
+        for (int i = 0; i < M; i++) {
+            scanf("%d %d", &x, &y);
+            g[x].push_back(y);
+            g[y].push_back(x);
+        }
+        for (int i = 1; i <= N - 1; i++) {
+            int a;
+            scanf("%d", &a);
+            chaves[a].push_back(i + 1);
+        }
+
+        vector <bool> key = bfs(1, g, chaves);
+        cont = 0;
+
+        for (int i = 1; i <= g.size(); i++) {
+            if (key[i] == true) {
+                cont++;
+            } else {
+                break;
+            }
+        }
+        if (cont == g.size()-1) {
+            printf("sim\n");
+        } else {
+            printf("nao\n");
+        }
+        g.clear();
+        chaves.clear();
+    }
+
+    return 0;
+}
