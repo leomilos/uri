@@ -1,0 +1,104 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<cstdlib>
+#include<map>
+#include<algorithm> 
+
+using namespace std;
+
+vector< vector<int> > g; // Lista de Adjacência
+
+// Algoritmo calcula a menor distancia para alcançar todos os vertices do grafo partindo de um vertice inicial.
+vector<int> bfs(int inicio){
+	//para os 3 vetores a seguir, cada posição do vetor representa um vertice do grafo.
+    vector<int> d(g.size(), -1); // Vetor de distância minima para alcançar o vertice.
+    vector<int> p(g.size(), -1); // Vetor que armazena o pai de cada vertice.
+    vector<bool> cor(g.size(), false); // Define se cada vertice ja foi encontrado ou não.
+    
+	queue<int> Q; // Fila que define a ordem de acesso aos vertices.
+	
+	// Inicialização
+    cor[inicio] = true; // Define a cor do vértice raiz como acessado.
+    d[inicio] = 0; // Define a distância da raiz para ela mesma como 0.
+    
+    Q.push(inicio); // Enfileira a raiz.
+
+    // Enquanto a fila não estiver vazia.
+    while(!Q.empty()){
+        int u = Q.front(); // Define u como sendo o vértice na frente na fila.
+        Q.pop(); // Desenfileira.
+		//cout<<"vertice atual: "<<u<<endl;
+        // Para todo vertice adjacente à "u".
+        for(int i = 0; i < g[u].size(); i++){
+            // Se o vertice adjacente à "u" não tiver sido encontrado.
+			if(cor[g[u][i]] == false){
+				//cout<<g[u][i]<<endl;
+                Q.push(g[u][i]); // Enfileira o vertice adjacente.
+                cor[g[u][i]] = true; // Define o vertice adjacente como encontrado.
+                d[g[u][i]] = d[u]+1; // Define a distancia minima para alcançar o vertice.
+                p[g[u][i]] = u; // Define o pai do vertice adjacente como "u".
+            }
+        }
+        //cout<<endl;
+    }
+    
+    // *** OBS: O RETORNO DA FUNÇÃO PODE SER ALTERADO CONFORME A NECESSIDADE DO PROBLEMA. ***
+    return d; // Retorna o vetor peso.
+}
+
+int main(){
+	int N,M,cont=0;
+	map<string,int> mapa1;
+	vector<string> a,b;
+	
+	cin>>N>>M;
+	
+	int vertice;
+	vector<int> posicao;
+	
+	string x,y;
+	
+	g.resize(N+1);
+	
+	a.resize(N+1);
+	
+	for(int i=0;i<N;i++){
+	  cin>>x;
+	  if(mapa1.find(x)==mapa1.end()){
+	    mapa1.insert(pair<string,int>(x,cont));
+	    a[cont]=x;
+	    cont++;
+	  }
+	  //cout<<x<<" = "<<cont-1<<" >> ";
+	  cin>>y;
+	  if(mapa1.find(y)==mapa1.end()){
+	    mapa1.insert(pair<string,int>(y,cont));
+	    a[cont]=y;
+	    cont++;
+	  }
+	  //cout<<y<<" = "<<cont-1<<endl;
+	  g[mapa1[x]].push_back(mapa1[y]);
+	  //cout<<"chegou "<<i+1<<endl;
+		g[mapa1[y]].push_back(mapa1[x]);
+		//cout<<"chegou"<<endl;
+	}
+	vector<int> dist = bfs(0); //passa o vetor "inicio" com o número digitado 
+	int cont2 =0;
+	for(int i=0;i<dist.size();i++){
+	  if(dist[i]>0&&dist[i]<=M){
+	    cont2++;
+	    //cout<<a[i]<<endl;
+	    posicao.push_back(i);
+	    b.push_back(a[i]);
+	  }
+	}
+	sort(b.begin(),b.end());
+	cout<<cont2<<endl;
+	for(int i=0;i<posicao.size();i++){
+	  cout<<b[i]<<endl;
+	}
+	system("pause");
+	
+    return 0;
+}
