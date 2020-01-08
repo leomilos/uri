@@ -1,0 +1,58 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<cstring>
+#include<cstdio>
+#include<climits>
+
+using namespace std;
+
+int g [50][50];
+int vet[50];
+int N,M,flag=0;
+void DFS(int x, int cont){
+  cont++;
+  vet[x]=1;
+  for(int i=0;i<N;i++){
+    if(g[x][i]){
+      flag=1;
+      for(int j=0;j<cont;j++){
+        cout<<"  ";
+      }
+      cout<<x<<"-"<<i;
+  	  if(vet[i]==0){
+  	    cout<<" pathR(G,"<<i<<")"<<endl;
+  	    DFS(i,cont);
+  	  }else{
+  	    cout<<endl;
+  	  }
+  	}
+  }
+}
+int main(){
+	int l;
+	cin>>l;
+	for(int k=0;k<l;k++){
+	  flag=0;
+	  cout<<"Caso "<<k+1<<":"<<endl;
+  	cin>>N>>M;
+    //g = new vector<int> [N+1];      
+    int x,y;
+    memset(vet,0,sizeof(vet));
+  	memset(g,0,sizeof(g));
+  	for(int i=0;i<M;i++){
+  		cin>>x>>y;
+  		g[x][y]=1;
+  	}
+  	for(int i=0;i<N;i++){
+  	  if(vet[i]==0){
+  	    DFS(i,0);
+  	  }
+  	  if(flag==1){
+  	    cout<<endl;
+  	    flag=0;
+  	  }
+  	}
+	}
+    return 0;
+}
