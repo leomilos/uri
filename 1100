@@ -1,0 +1,117 @@
+#include<iostream>
+#include<vector>
+#include<queue>
+#include <cstdlib>
+
+using namespace std;
+
+vector< vector<int> > g; // Lista de Adjacência
+int pa,pb;
+
+// Algoritmo calcula a menor distancia para alcançar todos os vertices do grafo partindo de um vertice inicial.
+int bfs(int inicio){
+	//para os 3 vetores a seguir, cada posição do vetor representa um vertice do grafo.
+    vector<int> d(g.size(), -1); // Vetor de distância minima para alcançar o vertice.
+    vector<int> p(g.size(), -1); // Vetor que armazena o pai de cada vertice.
+    vector<bool> cor(g.size(), false); // Define se cada vertice ja foi encontrado ou não.
+    
+	queue<int> Q; // Fila que define a ordem de acesso aos vertices.
+	
+	// Inicialização
+    cor[inicio] = true; // Define a cor do vértice raiz como acessado.
+    d[inicio] = 0; // Define a distância da raiz para ela mesma como 0.
+    
+    Q.push(inicio); // Enfileira a raiz.
+
+    // Enquanto a fila não estiver vazia.
+    while(!Q.empty()){
+        int u = Q.front(); // Define u como sendo o vértice na frente na fila.
+        Q.pop(); // Desenfileira.
+	  //cout<<"vertice atual: "<<u<<endl;
+		    if(u==65){
+		      continue;
+		    }
+        // Para todo vertice adjacente à "u".
+        for(int i = 0; i < g[u].size(); i++){
+            // Se o vertice adjacente à "u" não tiver sido encontrado.
+			if(cor[g[u][i]] == false){
+				//cout<<g[u][i]<<endl;
+                Q.push(g[u][i]); // Enfileira o vertice adjacente.
+                cor[g[u][i]] = true; // Define o vertice adjacente como encontrado.
+                d[g[u][i]] = d[u]+1; // Define a distancia minima para alcançar o vertice.
+                p[g[u][i]] = u; // Define o pai do vertice adjacente como "u".
+                if(g[u][i]==pb){
+                  return d[u]+1;
+                }
+            }
+        }
+        //cout<<endl;
+        //cout<<"tamanho"<<Q.size()<<endl;
+    }
+    
+    // *** OBS: O RETORNO DA FUNÇÃO PODE SER ALTERADO CONFORME A NECESSIDADE DO PROBLEMA. ***
+    //cout<<"voltou"<<endl;
+    return d[d.size()-1]+1; // Retorna o vetor peso.
+}
+
+int main(){
+  g.resize(65);
+    for(int i=1;i<=64;i++){
+      	if((i/8)<=6){
+      	    if(i%8<=6&&i%8!=0){
+            	  g[i].push_back(i+10);
+            	  g[i+10].push_back(i);
+          	}
+          	if(i%8>2||i%8==0){
+            	  g[i].push_back(i+6);
+            	  g[i+6].push_back(i);
+          	}
+      	}
+      	if((i/8)<=5){
+      	  if(i%8>=2||i%8==0){
+      	    g[i].push_back(i+15);
+      	    g[i+15].push_back(i);
+      	  }
+      	  if(i%8!=0){
+      	    g[i].push_back(i+17);
+      	    g[i+17].push_back(i);
+      	  }
+      	}
+      	if((i/8)>2){
+      	    if(i%8<=6&&i%8!=0){
+            	  g[i].push_back(i-6);
+            	  g[i-6].push_back(i);
+          	}
+          	if(i%8>2||i%8==0){
+            	  g[i].push_back(i-10);
+            	  g[i-10].push_back(i);
+          	}
+      	}
+      	if((i/8)>2){
+      	  if(i%8>=2||i%8==0){
+      	    g[i].push_back(i-17);
+      	    g[i-17].push_back(i);
+      	  }
+      	  if(i%8!=0){
+      	    g[i].push_back(i-15);
+      	    g[i-15].push_back(i);
+      	  }
+    	  }
+      }
+      string posicaoA,posicaoB;
+  while(cin>>posicaoA>>posicaoB){
+      if(posicaoA[0]==posicaoB[0]&&posicaoA[1]==posicaoB[1]){
+        cout<<"To get from "<<posicaoA<<" to "<<posicaoB<<" takes 0 knight moves."<<endl;
+        continue;
+      }
+      pa=(posicaoA[0]-96)+((posicaoA[1]-48)*8)-8;
+      pb=(posicaoB[0]-96)+((posicaoB[1]-48)*8)-8;
+    	int d = bfs(pa);
+    	/*if(pa%8==0||pb%8==0){
+    	  d++;
+    	}*/
+    	cout<<"To get from "<<posicaoA<<" to "<<posicaoB<<" takes "<<d<<" knight moves."<<endl;
+    }
+	system("pause");
+  return 0;
+}
