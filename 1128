@@ -1,0 +1,51 @@
+
+
+class Graf:
+    def __init__(self):
+        self.graf = {}
+        self.color = {}
+    def add_vertex(self,node):
+        if node not in self.graf:
+            self.graf[node]=[]
+            self.color[node] = False
+    def reset_color(self):
+        for node in self.color:
+            self.color[node]=False
+    def add_edge(self,node_1,node_2,side):
+        self.graf[node_1].append(node_2)
+        if side ==2:
+            self.graf[node_2].append(node_1)
+    def dfs(self,start):
+        self.color[start]=True
+        for vertex in self.graf[start]:
+            if self.color[vertex]==False:
+               self.dfs(vertex) 
+    def transpose(self):
+        transpose = Graf()
+        for node in self.graf:
+            transpose.add_vertex(node)
+        for node in self.graf:
+            for neighbor in self.graf[node]:
+                transpose.add_edge(neighbor, node, 1)
+        return transpose
+vertex,edge = list(map(int,input().strip().split()))
+
+while vertex!= 0 and edge!=0:
+    graf = Graf()
+    for i in range(edge):
+        node_1,node_2,side = list(map(int,input().strip().split()))
+        graf.add_vertex(node_1)
+        graf.add_vertex(node_2)
+        graf.add_edge(node_1, node_2, side)
+    graf.dfs(node_1)
+    answer = 1
+    for vertex in graf.color:
+        if graf.color[vertex]==False:
+            answer = 0
+    transpose = graf.transpose()
+    transpose.dfs(node_1)
+    for vertex in transpose.color:
+        if transpose.color[vertex]==False:
+            answer = 0
+    print(answer)
+    vertex,edge = list(map(int,input().strip().split()))
