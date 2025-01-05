@@ -1,0 +1,18 @@
+
+entrity_qty = int(input().strip())
+
+for i in range(entrity_qty):
+    string_list = list(input().strip().split())
+    size_list = {}
+    for string in string_list:
+        size = len(string)
+        if size not in size_list:
+            size_list[size]=[]
+        size_list[size].append(string)
+    listed_values = list(size_list.keys())
+    listed_values.sort(reverse = True)
+    order_list = []
+    for size_value in listed_values:
+        for string in size_list[size_value]:
+            order_list.append(string)
+    print(str(order_list)[1:-1].replace("'",'').replace(",",''))
